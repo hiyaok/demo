@@ -1,3 +1,4 @@
+# UBOT GAMEFI CHATTING GRUP BY @hiyaok
 import asyncio
 import json
 import os
@@ -24,7 +25,6 @@ API_HASH = None
 class GameFiConversationEngine:
     """Engine percakapan GameFi 2025 dengan data REAL dan nyambung"""
     
-    # Data REAL GameFi 2025 berdasarkan riset
     GAMEFI_REAL_DATA = {
         "top_games_2025": [
             "Axie Infinity", "Illuvium", "Big Time", "Off The Grid", "Pixels",
@@ -50,7 +50,6 @@ class GameFiConversationEngine:
         ]
     }
     
-    # Real trends & issues 2025
     REAL_TRENDS_2025 = [
         "93% GameFi games udah mati guys, cuma yang solid aja survive",
         "Ronin migration Pixels NFT bikin floor price naik 40%",
@@ -69,81 +68,33 @@ class GameFiConversationEngine:
         "Gods Unchained weekly tournament prize pool naik 50%"
     ]
     
-    # Real discussion topics
     REAL_DISCUSSIONS = [
-        # Market & Economics
         "floor price {game} {direction} {percent}% minggu ini",
         "ROI {game} masih worth it ga di 2025 kondisi market gini",
         "whales accumulate {token} volume naik {percent}%",
         "gas fee {blockchain} sekarang cuma ${amount}, murah banget",
         "tokenomics {token} sustainable ga sih long term",
-        
-        # Gameplay Real Issues
         "meta {game} berubah total after latest patch",
         "grinding {game} daily quest masih worth time ga",
         "scholarship rate {game} turun jadi {percent}%",
         "bot trading marketplace {game} makin ganggu",
         "server lag {game} parah sejak update kemarin",
-        
-        # Real Partnerships & Updates  
         "{game} partnership dengan {brand} baru diannounce",
         "{blockchain} integrate {game} migration completed",
         "{game} airdrop buat {token} stakers confirmed",
         "update: {game} Season Pass rewards buffed",
         "{game} mobile version launching {timeframe}",
-        
-        # Strategy & Tips
         "strategy farming {token} paling efisien 2025",
         "build terbaik PvP {game} after meta shift",
         "timing terbaik flip {nft} based on market cycle",
         "guild war {game} tactics yang lagi dominan",
-        "breed vs buy {game} creatures mana profitable",
-        
-        # Community Drama
-        "drama komunitas {game} soal tokenomics change",
-        "developer {game} jarang update bikin frustasi",
-        "turnamen {game} controversy prize distribution",
-        "scholarship {game} rate cut backlash parah"
+        "breed vs buy {game} creatures mana profitable"
     ]
-    
-    # Response patterns dengan nama untuk REPLY
-    REPLY_PATTERNS = {
-        "agree_with_name": [
-            "nah {name} bener banget tuh",
-            "exactly {name}, gue setuju 100%",
-            "{name} on point dah, apalagi {context}",
-            "betul kata {name}, {additional_point}",
-            "iya {name}, pengalaman gue juga sama",
-            "{name} ga salah, {supporting_fact}"
-        ],
-        "disagree_with_name": [
-            "hmm {name}, kurang setuju sih karena {reason}",
-            "{name}, debatable menurutku soalnya {counterpoint}",
-            "wait {name}, tapi {contradiction} kan?",
-            "{name}, agak skeptis gue {reason}",
-            "beda perspektif nih {name}, gue rasa {opinion}"
-        ],
-        "ask_name": [
-            "{name}, emang {detail} gimana pengalaman lu?",
-            "nanya ke {name} nih, lu udah coba {action} belom?",
-            "{name}, serius? terus {followup}?",
-            "{name}, maksudnya {clarification}?",
-            "menarik point {name}, kalau {scenario} gimana?"
-        ],
-        "add_info_to_discussion": [
-            "tambahin dikit, based on riset {info}",
-            "btw yang belom tau, {fact}",
-            "oh iya, ada update: {news}",
-            "fun fact soal {topic}: {trivia}",
-            "FYI guys, {important_info}"
-        ]
-    }
     
     @staticmethod
     def fill_real_data(template):
         """Fill template dengan data REAL 2025"""
         text = template
-        
         data = GameFiConversationEngine.GAMEFI_REAL_DATA
         
         replacements = {
@@ -166,31 +117,25 @@ class GameFiConversationEngine:
     @staticmethod
     def get_starter_message():
         """Generate starter message dengan data REAL"""
-        # 30% chance ambil dari real trends
         if random.random() < 0.3:
             return random.choice(GameFiConversationEngine.REAL_TRENDS_2025)
         
-        # 70% generate dari discussion topics
         discussion = random.choice(GameFiConversationEngine.REAL_DISCUSSIONS)
         return GameFiConversationEngine.fill_real_data(discussion)
     
     @staticmethod
     def build_contextual_prompt(conversation_history, replying_to=None):
-        """Build prompt dengan konteks penuh + info siapa yang direply"""
-        
-        # Ambil context messages (max 5 terakhir)
+        """Build prompt dengan konteks penuh"""
         recent = conversation_history[-5:] if len(conversation_history) > 5 else conversation_history
         
         context_text = "PERCAKAPAN SEBELUMNYA:\n"
         for msg in recent:
             context_text += f"{msg['speaker']}: {msg['message']}\n"
         
-        # Info siapa yang direply
         reply_context = ""
         if replying_to:
             reply_context = f"\nKAMU LAGI REPLY KE: {replying_to['name']}\nPESAN NYA: {replying_to['message']}\n"
         
-        # Determine conversation phase
         if len(conversation_history) < 3:
             phase = "awal percakapan - engage dengan antusias"
         elif len(conversation_history) < 8:
@@ -202,22 +147,21 @@ class GameFiConversationEngine:
     
     @staticmethod
     def create_reply_prompt(context_text, reply_context, phase, response_type, reply_to_name):
-        """Create prompt untuk reply yang BENAR-BENAR nyambung"""
+        """Create prompt untuk reply yang nyambung"""
         
         base_rules = """ATURAN WAJIB:
 1. Kamu HANYA bahas GameFi 2025: NFT gaming, blockchain games, P2E, tokenomics
-2. Pakai data REAL: Axie, Illuvium, Big Time, Ronin, Immutable, dll (2025 actual projects)
+2. Pakai data REAL: Axie, Illuvium, Big Time, Ronin, Immutable, dll
 3. Bahasa: Indonesia gaul natural + typo ok, singkatan ok
 4. WAJIB nyambung dengan pesan yang lu reply
 5. Panjang: 1-2 kalimat (max 120 karakter)
 6. Emoji: 0-1 aja, jangan lebay
-
 """
         
         response_guides = {
             "agree": f"Setuju dengan {reply_to_name}, tambahin insight atau data supporting",
             "disagree": f"Kasih perspektif beda dengan {reply_to_name} tapi respectful + alasan",
-            "question": f"Tanya hal spesifik ke {reply_to_name} yang relevant ke topik",
+            "question": f"Tanya hal spesifik ke {reply_to_name} yang relevant",
             "add_info": f"Tambahin informasi baru yang relate ke poin {reply_to_name}",
             "personal_exp": f"Share pengalaman pribadi yang relate ke topik {reply_to_name}"
         }
@@ -238,11 +182,6 @@ DATA GAMEFI 2025 VALID:
 
 TUGAS: Reply pesan {reply_to_name} dengan natural, nyambung 100%, tema GameFi 2025.
 
-CONTOH GOOD REPLIES:
-- "{reply_to_name} bener, apalagi sejak Ronin integrate Pixels floor naik 40%"
-- "wait {reply_to_name}, ROI Axie Land Quest masih worth kalau stake AXS"
-- "setuju {reply_to_name}, Big Time modder tools bakal game changer"
-
 RESPOND SEKARANG (nyambung + GameFi 2025 only):"""
         
         return prompt
@@ -257,7 +196,6 @@ class GroupManager:
         self.load_groups()
     
     def load_groups(self):
-        """Load daftar grup dari config"""
         if os.path.exists(self.config_file):
             try:
                 with open(self.config_file, 'r') as f:
@@ -267,7 +205,6 @@ class GroupManager:
                 self.groups = []
     
     def save_groups(self):
-        """Save daftar grup"""
         try:
             data = {}
             if os.path.exists(self.config_file):
@@ -282,8 +219,6 @@ class GroupManager:
             print(f"✗ Error saving groups: {e}")
     
     def add_group(self, group_link, group_name=None):
-        """Tambah grup ke list"""
-        # Check if already exists
         if any(g['link'] == group_link for g in self.groups):
             print(f"✗ Grup {group_link} sudah ada dalam list!")
             return False
@@ -297,7 +232,6 @@ class GroupManager:
         return True
     
     def remove_group(self, index):
-        """Hapus grup dari list"""
         if 0 <= index < len(self.groups):
             removed = self.groups.pop(index)
             self.save_groups()
@@ -305,11 +239,9 @@ class GroupManager:
         return None
     
     def get_groups(self):
-        """Get semua grup"""
         return self.groups
     
     async def auto_join_groups(self, client, client_name):
-        """Auto join semua grup dalam list"""
         joined = []
         already_in = []
         failed = []
@@ -318,9 +250,7 @@ class GroupManager:
             try:
                 link = group['link'].strip()
                 
-                # Parse link
                 if 'joinchat/' in link or '+' in link:
-                    # Invite link
                     hash_match = re.search(r'joinchat/([a-zA-Z0-9_-]+)', link) or re.search(r'\+([a-zA-Z0-9_-]+)', link)
                     if hash_match:
                         hash_code = hash_match.group(1)
@@ -333,7 +263,6 @@ class GroupManager:
                         except InviteHashExpiredError:
                             failed.append(f"{group['name']} (link expired)")
                 else:
-                    # Username/ID
                     username = link.replace('@', '').replace('https://t.me/', '')
                     try:
                         await client(JoinChannelRequest(username))
@@ -358,7 +287,7 @@ class GroupManager:
 class UserbotManager:
     def __init__(self):
         self.userbots = []
-        self.clients = {}
+        self.clients = {}  # Format: {user_id: {'client': client, 'name': display_name, 'username': username}}
         self.running = False
         self.conversation_history = []
         self.session_id = self.generate_session_id()
@@ -366,11 +295,21 @@ class UserbotManager:
         self.group_manager = GroupManager(CONFIG_FILE)
     
     def generate_session_id(self):
-        """Generate unique session ID"""
         return f"gamefi_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{random.randint(1000, 9999)}"
     
+    def get_display_name(self, user):
+        """Ambil nama display yang proper dari user Telegram"""
+        # Priority: first_name + last_name > first_name > username > user_id
+        if user.last_name:
+            return f"{user.first_name} {user.last_name}"
+        elif user.first_name:
+            return user.first_name
+        elif user.username:
+            return user.username
+        else:
+            return f"User{user.id}"
+    
     def load_config(self):
-        """Load konfigurasi dari file"""
         if os.path.exists(CONFIG_FILE):
             try:
                 with open(CONFIG_FILE, 'r') as f:
@@ -384,7 +323,6 @@ class UserbotManager:
             self.userbots = []
     
     def save_config(self):
-        """Save konfigurasi ke file"""
         try:
             data = {'userbots': self.userbots}
             if os.path.exists(CONFIG_FILE):
@@ -400,13 +338,11 @@ class UserbotManager:
             print(f"✗ Error saving config: {e}")
     
     def remove_invalid_userbot(self, phone):
-        """Hapus userbot yang invalid"""
         self.userbots = [u for u in self.userbots if u['phone'] != phone]
         self.save_config()
         print(f"✗ Userbot {phone} dihapus (session invalid)")
     
     async def add_userbot(self):
-        """Tambah userbot baru"""
         print("\n=== TAMBAH USERBOT BARU ===")
         
         if not API_ID or not API_HASH:
@@ -440,13 +376,15 @@ class UserbotManager:
                 'phone': phone,
                 'session': session_string,
                 'name': me.first_name,
-                'username': me.username or "No username"
+                'username': me.username or "No username",
+                'user_id': me.id
             }
             
             self.userbots.append(userbot_data)
             self.save_config()
             
-            print(f"✓ Berhasil menambahkan: {me.first_name} (@{me.username})")
+            display_name = self.get_display_name(me)
+            print(f"✓ Berhasil menambahkan: {display_name} (@{me.username})")
             
             await client.disconnect()
             
@@ -476,7 +414,7 @@ class UserbotManager:
         return None
     
     def get_fallback_response(self, reply_to_name, response_type, context):
-        """Fallback response yang tetap nyambung"""
+        """Fallback response yang nyambung"""
         
         fallbacks = {
             "agree": [
@@ -509,16 +447,14 @@ class UserbotManager:
         return random.choice(fallbacks.get(response_type, fallbacks["agree"]))
     
     async def send_with_typing(self, client, chat, message, reply_to=None):
-        """Kirim pesan dengan typing animation dan reply"""
+        """Kirim pesan dengan typing animation"""
         try:
-            # Realistic typing duration
             words = len(message.split())
             typing_duration = min(words * 0.25 * random.uniform(0.8, 1.2), 6)
             
             async with client.action(chat, 'typing'):
                 await asyncio.sleep(typing_duration)
             
-            # Send with or without reply
             await client.send_message(chat, message, reply_to=reply_to)
             return True
             
@@ -527,11 +463,18 @@ class UserbotManager:
             return False
     
     async def generate_natural_conversation(self, chat_id):
-        """Generate percakapan yang BENAR-BENAR nyambung dengan reply"""
+        """Generate percakapan natural dengan reply system - FIXED VERSION"""
         
-        bot_names = list(self.clients.keys())
-        starter_name = random.choice(bot_names)
-        starter_client = self.clients[starter_name]
+        bot_user_ids = list(self.clients.keys())
+        
+        if len(bot_user_ids) < 2:
+            print("✗ Minimal butuh 2 bot untuk percakapan")
+            return
+        
+        # Pilih starter
+        starter_id = random.choice(bot_user_ids)
+        starter_client = self.clients[starter_id]['client']
+        starter_name = self.clients[starter_id]['name']
         
         print(f"\n{'='*60}")
         print(f"🎬 PERCAKAPAN BARU - TEMA GAMEFI 2025")
@@ -543,56 +486,59 @@ class UserbotManager:
         
         self.conversation_history.append({
             'speaker': starter_name,
+            'user_id': starter_id,
             'message': starter_message,
             'message_obj': None
         })
         
         print(f"📤 {starter_name}: {starter_message}")
         
-        # Send starter
         sent = await self.send_with_typing(starter_client, chat_id, starter_message)
         if sent:
-            # Save message object untuk reply nanti
             messages = await starter_client.get_messages(chat_id, limit=1)
             if messages:
                 self.conversation_history[-1]['message_obj'] = messages[0]
         
         await asyncio.sleep(random.uniform(3, 7))
         
-        # Conversation loop dengan REPLY
+        # Conversation loop
         num_messages = random.randint(10, 20)
-        previous_speaker = starter_name
+        previous_user_id = starter_id
         
         for i in range(num_messages):
-            # Pilih responder
-            available = [n for n in bot_names if n != previous_speaker]
-            if not available:
-                available = bot_names
+            # CRITICAL FIX: Pilih responder yang BUKAN previous speaker
+            available_ids = [uid for uid in bot_user_ids if uid != previous_user_id]
             
-            # 20% chance sama bot reply lagi (natural)
-            if random.random() < 0.2 and len(bot_names) > 2:
-                responder_name = previous_speaker
-            else:
-                responder_name = random.choice(available)
+            if not available_ids:
+                print("✗ Tidak ada bot lain tersedia untuk reply")
+                break
             
-            responder_client = self.clients[responder_name]
+            responder_id = random.choice(available_ids)
+            responder_client = self.clients[responder_id]['client']
+            responder_name = self.clients[responder_id]['name']
             
-            # 70% chance untuk REPLY message sebelumnya (sisanya standalone)
+            # 70% chance untuk reply
             will_reply = random.random() < 0.7 and len(self.conversation_history) > 0
             
             reply_to_msg = None
             reply_to_info = None
             
             if will_reply:
-                # Pilih message untuk direply (biasanya 1-2 terakhir)
-                reply_target_idx = random.choice([-1, -2]) if len(self.conversation_history) > 1 else -1
-                reply_target = self.conversation_history[reply_target_idx]
+                # CRITICAL FIX: Pilih message untuk direply yang BUKAN dari responder sendiri
+                available_history = [h for h in self.conversation_history if h['user_id'] != responder_id]
                 
-                reply_to_msg = reply_target.get('message_obj')
-                reply_to_info = {
-                    'name': reply_target['speaker'],
-                    'message': reply_target['message']
-                }
+                if available_history:
+                    # Pilih dari 1-2 terakhir
+                    if len(available_history) >= 2:
+                        reply_target = random.choice(available_history[-2:])
+                    else:
+                        reply_target = available_history[-1]
+                    
+                    reply_to_msg = reply_target.get('message_obj')
+                    reply_to_info = {
+                        'name': reply_target['speaker'],
+                        'message': reply_target['message']
+                    }
             
             # Build context
             context_text, reply_context, phase = self.engine.build_contextual_prompt(
@@ -600,42 +546,38 @@ class UserbotManager:
                 reply_to_info
             )
             
-            # Determine response type
+            # Response type
             response_types = ["agree", "question", "add_info", "personal_exp", "disagree"]
             weights = [0.30, 0.25, 0.20, 0.15, 0.10]
             response_type = random.choices(response_types, weights=weights)[0]
             
-            # Create prompt
             reply_name = reply_to_info['name'] if reply_to_info else "someone"
             prompt = self.engine.create_reply_prompt(
                 context_text, reply_context, phase, response_type, reply_name
             )
             
-            # Get last message
             last_msg = self.conversation_history[-1]['message']
             
             # Call AI
             ai_response = await self.call_ai_api(last_msg, prompt, self.session_id)
             
-            # Fallback if needed
             if not ai_response or len(ai_response) < 10:
                 response_message = self.get_fallback_response(reply_name, response_type, context_text)
             else:
                 response_message = ai_response
             
-            # Indicator reply
             reply_indicator = f"↩️ @{reply_name}" if will_reply else ""
             
             # Save to history
             self.conversation_history.append({
                 'speaker': responder_name,
+                'user_id': responder_id,
                 'message': response_message,
                 'message_obj': None
             })
             
             print(f"📤 {responder_name} {reply_indicator}: {response_message}")
             
-            # Send dengan reply
             sent = await self.send_with_typing(
                 responder_client, 
                 chat_id, 
@@ -644,12 +586,12 @@ class UserbotManager:
             )
             
             if sent:
-                # Save message object
                 messages = await responder_client.get_messages(chat_id, limit=1)
                 if messages:
                     self.conversation_history[-1]['message_obj'] = messages[0]
             
-            previous_speaker = responder_name
+            # CRITICAL: Update previous speaker
+            previous_user_id = responder_id
             
             # Natural delay
             delay_patterns = {
@@ -668,11 +610,11 @@ class UserbotManager:
             await asyncio.sleep(delay)
         
         print(f"\n{'='*60}")
-        print(f"✅ Percakapan selesai ({num_messages} pesan, {sum(1 for h in self.conversation_history[-num_messages:] if h.get('message_obj'))} dengan reply)")
+        print(f"✅ Percakapan selesai ({num_messages} pesan)")
         print(f"{'='*60}\n")
     
     async def run_continuous_conversation(self, chat_id):
-        """Run percakapan terus menerus dengan break natural"""
+        """Run percakapan terus menerus"""
         
         conversation_count = 0
         
@@ -682,15 +624,13 @@ class UserbotManager:
                 
                 print(f"\n🔥 SESI PERCAKAPAN #{conversation_count}")
                 
-                # Generate conversation
                 await self.generate_natural_conversation(chat_id)
                 
-                # Break time antara percakapan
                 break_patterns = {
-                    'short': (40, 90),       # Break pendek
-                    'medium': (90, 180),     # Break sedang
-                    'long': (180, 400),      # Break lama
-                    'very_long': (400, 700)  # Break sangat lama
+                    'short': (40, 90),
+                    'medium': (90, 180),
+                    'long': (180, 400),
+                    'very_long': (400, 700)
                 }
                 
                 pattern = random.choices(
@@ -701,41 +641,34 @@ class UserbotManager:
                 break_time = random.uniform(*break_patterns[pattern])
                 
                 print(f"⏸️  Break {int(break_time)}s ({int(break_time/60)} menit) sebelum sesi berikutnya...")
-                print(f"💤 Biarkan chat natural dulu\n")
                 
                 await asyncio.sleep(break_time)
                 
-                # Session reset untuk variasi (15% chance)
                 if random.random() < 0.15:
-                    old_session = self.session_id
                     self.session_id = self.generate_session_id()
-                    print(f"🔄 Session direset untuk variasi AI response")
-                    print(f"   {old_session[:25]}... → {self.session_id[:25]}...\n")
+                    print(f"🔄 Session direset untuk variasi\n")
                 
-                # Keep history manageable (last 15 messages)
                 if len(self.conversation_history) > 15:
                     self.conversation_history = self.conversation_history[-15:]
                 
         except KeyboardInterrupt:
             print("\n\n⏹️  Dihentikan oleh user")
         except Exception as e:
-            print(f"\n✗ Error dalam conversation loop: {e}")
+            print(f"\n✗ Error: {e}")
             import traceback
             traceback.print_exc()
         finally:
             self.running = False
     
     async def start_all_userbots(self):
-        """Start semua userbot dengan auto-join"""
+        """Start semua userbot - FIXED VERSION"""
         if len(self.userbots) < 2:
-            print("✗ Minimal butuh 2 userbot untuk percakapan!")
+            print("✗ Minimal butuh 2 userbot!")
             return
         
-        # Show available groups
         groups = self.group_manager.get_groups()
         if not groups:
-            print("✗ Belum ada grup yang ditambahkan!")
-            print("   Silakan tambah grup dulu di menu 'Kelola Grup'")
+            print("✗ Belum ada grup!")
             return
         
         print(f"\n{'='*60}")
@@ -743,15 +676,14 @@ class UserbotManager:
         print(f"{'='*60}")
         for idx, group in enumerate(groups, 1):
             print(f"{idx}. {group['name']}")
-            print(f"   Link: {group['link']}")
-            print(f"   Added: {group['added_at']}\n")
+            print(f"   Link: {group['link']}\n")
         
         choice = input("Pilih nomor grup target (atau 0 untuk input manual): ").strip()
         
         try:
             choice_num = int(choice)
             if choice_num == 0:
-                chat = input("Masukkan username/ID grup (contoh: @grupgame atau -1001234567890): ").strip()
+                chat = input("Masukkan username/ID grup: ").strip()
             elif 1 <= choice_num <= len(groups):
                 selected_group = groups[choice_num - 1]
                 chat = selected_group['link']
@@ -771,7 +703,7 @@ class UserbotManager:
         print("🔌 MENGHUBUNGKAN & AUTO-JOIN USERBOT...")
         print(f"{'='*60}")
         
-        # Connect all userbots
+        # Connect all userbots dengan tracking user_id
         valid_userbots = []
         
         for idx, userbot in enumerate(self.userbots, 1):
@@ -788,13 +720,22 @@ class UserbotManager:
                 
                 if await client.is_user_authorized():
                     me = await client.get_me()
-                    self.clients[me.first_name] = client
+                    display_name = self.get_display_name(me)
+                    
+                    # CRITICAL FIX: Simpan dengan user_id sebagai key
+                    self.clients[me.id] = {
+                        'client': client,
+                        'name': display_name,
+                        'username': me.username or "no_username",
+                        'phone': userbot['phone']
+                    }
+                    
                     valid_userbots.append(userbot)
-                    print(f"✓ {me.first_name} (@{me.username}) terhubung")
+                    print(f"✓ {display_name} (@{me.username}) terhubung [ID: {me.id}]")
                     
                     # Auto-join groups
                     print(f"  🔗 Auto-join ke grup...")
-                    result = await self.group_manager.auto_join_groups(client, me.first_name)
+                    result = await self.group_manager.auto_join_groups(client, display_name)
                     
                     if result['joined']:
                         print(f"  ✓ Joined: {', '.join(result['joined'])}")
@@ -821,8 +762,8 @@ class UserbotManager:
         print(f"✅ {len(self.clients)} USERBOT SIAP")
         print(f"{'='*60}")
         
-        for name in self.clients.keys():
-            print(f"   • {name}")
+        for user_id, data in self.clients.items():
+            print(f"   • {data['name']} (@{data['username']}) [ID: {user_id}]")
         
         self.target_chat = chat
         self.running = True
@@ -830,6 +771,8 @@ class UserbotManager:
         print(f"\n🎯 Target: {chat}")
         print("🤖 Mode: Percakapan Natural dengan Reply System")
         print("📊 Data: GameFi Real 2025 (Axie, Illuvium, Ronin, etc)")
+        print("✅ TIDAK AKAN REPLY DIRI SENDIRI (Fixed)")
+        print("✅ Pakai Nama Telegram Asli (Fixed)")
         print("🚀 Memulai percakapan otomatis...")
         print("⚠️  Tekan Ctrl+C untuk berhenti\n")
         
@@ -842,12 +785,12 @@ class UserbotManager:
         """Stop dan disconnect semua userbot"""
         print("\n🔌 Memutuskan koneksi userbot...")
         
-        for name, client in self.clients.items():
+        for user_id, data in self.clients.items():
             try:
-                await client.disconnect()
-                print(f"✓ {name} disconnected")
+                await data['client'].disconnect()
+                print(f"✓ {data['name']} disconnected")
             except Exception as e:
-                print(f"✗ Error disconnecting {name}: {e}")
+                print(f"✗ Error disconnecting {data['name']}: {e}")
         
         self.clients.clear()
         self.running = False
@@ -866,6 +809,8 @@ class UserbotManager:
         for idx, userbot in enumerate(self.userbots, 1):
             print(f"{idx}. {userbot['name']} (@{userbot['username']})")
             print(f"   📞 {userbot['phone']}")
+            if 'user_id' in userbot:
+                print(f"   🆔 {userbot['user_id']}")
             print()
     
     async def delete_userbot(self):
@@ -996,6 +941,7 @@ async def main():
 ║         📊 Real GameFi Data (Axie, Illuvium, etc)        ║
 ║         🤖 AI-Powered Context Aware Responses            ║
 ║         🔗 Auto-Join Groups System                       ║
+║         ✅ FIXED: No Self-Reply + Real Names             ║
 ║                                                           ║
 ╚═══════════════════════════════════════════════════════════╝
 """)
