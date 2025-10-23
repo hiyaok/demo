@@ -78,7 +78,7 @@ class ConversationPersonality:
         if not p:
             return None
         
-        if random.random() < 0.4:  # 40% chance inject
+        if random.random() < 0.4:
             return random.choice(p['phrases'])
         return None
     
@@ -91,7 +91,6 @@ class ConversationPersonality:
         
         base_fallbacks = p['fallback_phrases']
         
-        # Enhance based on context
         if context_type == 'question':
             return f"{random.choice(base_fallbacks)} ya, {random.choice(['kurang tau juga', 'coba cek dulu', 'gue ga begitu paham'])}"
         elif context_type == 'agree':
@@ -277,7 +276,7 @@ class UserbotManager:
         self.clients = {}
         self.running = False
         self.conversation_history = []
-        self.bot_response_history = {}  # Track last responses per bot
+        self.bot_response_history = {}
         self.recent_speakers = []
         self.session_id = f"gf_{int(time.time())}_{random.randint(1000,9999)}"
         self.engine = GameFiConversationEngine()
@@ -362,7 +361,6 @@ class UserbotManager:
         """Build prompt yang BENER-BENER UNIK per bot"""
         p_data = ConversationPersonality.PERSONALITIES[personality]
         
-        # Get bot's recent responses untuk avoid repetition
         bot_history = self.bot_response_history.get(responder_id, [])
         recent_responses = bot_history[-5:] if len(bot_history) > 5 else bot_history
         
@@ -441,7 +439,7 @@ RESPOND SEKARANG:"""
                 params = {
                     'text': prompt,
                     'prompt': 'Respond VERY casually in Indonesian. Be brief, natural, match the personality.',
-                    'session': f"{self.session_id}_{responder_id}"  # Unique session per bot
+                    'session': f"{self.session_id}_{responder_id}"
                 }
                 response = requests.get(url, params=params, timeout=12)
                 if response.status_code == 200:
@@ -450,9 +448,7 @@ RESPOND SEKARANG:"""
                     if result:
                         result = result.strip().strip('"\'')
                         result = re.sub(r'\*\*?', '', result)
-                        # Validasi
                         if 10 < len(result) < 120:
-                            # Save to history
                             if responder_id not in self.bot_response_history:
                                 self.bot_response_history[responder_id] = []
                             self.bot_response_history[responder_id].append(result)
@@ -470,7 +466,6 @@ RESPOND SEKARANG:"""
         """Smart fallback dengan personality injection"""
         base = ConversationPersonality.get_fallback(personality, context_type)
         
-        # Inject personality phrase
         phrase = ConversationPersonality.get_phrase(personality)
         if phrase and random.random() < 0.5:
             return f"{base}, {phrase}"
@@ -588,7 +583,7 @@ RESPOND SEKARANG:"""
         num_messages = random.randint(18, 30)
         
         for turn in range(num_messages):
-            # Check external
+            # Check external messages
             if turn % random.randint(4, 6) == 0:
                 external = await self.check_external_messages(chat_id)
                 if external:
@@ -625,17 +620,16 @@ RESPOND SEKARANG:"""
                     response_text = self.engine.inject_typo(response_text)
                     print(f"📤 {responder_name} [{responder_personality}] ↩️ {ext_msg['sender_name']}: {response_text}")
                     
-                    sent = await self.send_typing(responder_client, chat_id, response_text, reply_to=ext_msg['msg_obj'])
+                    sent = await self.send_typing(responder_client, chat_id, response_text, reply_to=ext_msg.get('msg_obj'))
                     
-                    self.conversation_history.append({
-                        'user_id': responder_id,
-                        'name': responder_self.conversation_history.append({
-                        'user_id': responder_id,
-                        'name': responder_name,
-                        'text': response_text,
-                        'msg_obj': sent,
-                        'personality': responder_personality
-                    })
+                    if sent:
+                        self.conversation_history.append({
+                            'user_id': responder_id,
+                            'name': responder_name,
+                            'text': response_text,
+                            'msg_obj': sent,
+                            'personality': responder_personality
+                        })
                     
                     self.recent_speakers.append(responder_id)
                     if len(self.recent_speakers) > 5:
@@ -650,17 +644,18 @@ RESPOND SEKARANG:"""
             responder_name = self.clients[responder_id]['name']
             responder_personality = self.clients[responder_id]['personality']
             
-            # DECISION
+            # Decision logic
             decision = random.choices(
                 ['reply', 'standalone', 'off_topic'],
                 weights=[0.65, 0.25, 0.10]
             )[0]
             
             context = self.build_context()
+            response_text = None
+            reply_to = None
             
             if decision == 'off_topic':
                 response_text = random.choice(self.engine.OFF_TOPICS)
-                reply_to = None
                 print(f"📤 {responder_name} [{responder_personality}] [OFF-TOPIC]: {response_text}")
                 
             elif decision == 'reply':
@@ -685,7 +680,6 @@ RESPOND SEKARANG:"""
                     )
                     
                     ai_response = await self.call_ai(prompt, responder_id)
-                    
                     if ai_response:
                         response_text = ai_response
                     else:
@@ -708,7 +702,6 @@ RESPOND SEKARANG:"""
                 )
                 
                 ai_response = await self.call_ai(prompt, responder_id)
-                
                 if ai_response:
                     response_text = ai_response
                 else:
@@ -720,12 +713,10 @@ RESPOND SEKARANG:"""
                     response_text = random.choice(templates)
                 
                 response_text = self.engine.inject_typo(response_text)
-                reply_to = None
                 print(f"📤 {responder_name} [{responder_personality}]: {response_text}")
             
-            # SEND
+            # SEND message
             sent = await self.send_typing(responder_client, chat_id, response_text, reply_to=reply_to)
-            
             if sent:
                 self.conversation_history.append({
                     'user_id': responder_id,
@@ -734,7 +725,6 @@ RESPOND SEKARANG:"""
                     'msg_obj': sent,
                     'personality': responder_personality
                 })
-                
                 self.recent_speakers.append(responder_id)
                 if len(self.recent_speakers) > 5:
                     self.recent_speakers = self.recent_speakers[-5:]
@@ -804,7 +794,6 @@ RESPOND SEKARANG:"""
                     if len(self.conversation_history) > 30:
                         self.conversation_history = self.conversation_history[-20:]
                     
-                    # Trim bot response history
                     for bot_id in self.bot_response_history:
                         if len(self.bot_response_history[bot_id]) > 10:
                             self.bot_response_history[bot_id] = self.bot_response_history[bot_id][-10:]
@@ -881,7 +870,6 @@ RESPOND SEKARANG:"""
                         'personality': personality
                     }
                     
-                    # Initialize response history
                     self.bot_response_history[me.id] = []
                     
                     print(f"✓ {name} (@{me.username}) - Personality: {personality.upper()}")
